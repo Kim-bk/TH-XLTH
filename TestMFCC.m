@@ -1,4 +1,4 @@
-close all; clear all; clc;
+% close all; clear all; clc;
     folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
     vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
 
@@ -42,14 +42,17 @@ frame_duration = 0.03; %take frame duration 30msec
 [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowels(folders_name, vowels_name);
 
 MFCC_ORDER = 26;
+N_FFT = 1024;
 frameLength=floor(fs *  frame_duration);
 frameShiftLength=floor(fs * 0.015);
 figure;
 for i = 1 : length(vowels_name)
     MFCC=[];
+    FFT = [];
     for j = 1 : length(folders_name)
         %ste = [STE{i, j}];
         [mfccOneVowel{i, j}] = [];
+        [fftOneVowel{i, j}] = [];
         %frameCurrent = [frames{i, j}];
         for k = first_index_stable(i, j) : last_index_stable(i, j)
            % if (ste(k) >= Tste_avg*0.1) % vowels
@@ -59,30 +62,61 @@ for i = 1 : length(vowels_name)
                 %mfccMatrix  = melcepst(frameCurrent(k, :), fs, 'M', MFCC_ORDER, floor(3 * log(fs)), frameLength, frameShiftLength);
                 mfccMatrix  = melcepst(SignalCurrent(started:ended, 1).', fs, 'M', MFCC_ORDER, floor(3 * log(fs)), frameLength, frameShiftLength);
                 [mfccOneVowel{i, j}] = [[mfccOneVowel{i, j}]; mfccMatrix];
+
+                %Tinh pho bien do
+                fftMatrix = abs(fft(SignalCurrent(started:ended, 1), N_FFT));
+                fftMatrix = fftMatrix(1 : round(length(fftMatrix) / 2));
+                [fftOneVowel{i, j}] = [[fftOneVowel{i, j}]; reshape(fftMatrix,1, N_FFT / 2)];
            % end
         end
         MFCC = [MFCC; [mfccOneVowel{i, j}]];
+        FFT  = [FFT; [fftOneVowel{i,j}]];
         %mfccOneVowel{i, j} = Matrix_Average([mfccOneVowel{i, j}]);
     end
     [MFCC_avg(:, :, i)] = Matrix_Average(MFCC);
+    [FFT_avg(:, :, i)] = Matrix_Average(FFT);
+    
+% xuat dac trung 5 nguyen am theo mfcc
+%     subplot(5, 1, i);
+%     plot(MFCC_avg(:, :, i));
+%     legend('Spectral Envelope');
+%     ylabel('Amplitude');
+%     title(strcat('Vowel', {' '}, char(vowels_name(i, :))));
+%     datacursormode on;
+
+%xuat dac trung 5 nguyen am theo fft
     subplot(5, 1, i);
-    plot(MFCC_avg(:, :, i));
+    plot(FFT_avg(:, :, i));
     legend('Spectral Envelope');
     ylabel('Amplitude');
     title(strcat('Vowel', {' '}, char(vowels_name(i, :))));
     datacursormode on;
+
+
 %    [MFCC_Traning_2(:, :, i), ~, ~] =  v_kmeans(MFCC, 2); % k = 2 clusters
 %    [MFCC_Traning_3(:, :, i), ~, ~] =  kmeanlbg(MFCC, 3); % k = 3 clusters
 %    [MFCC_Traning_4(:, :, i), ~, ~] =  kmeanlbg(MFCC, 4); % k = 4 clusters
-    [MFCC_Traning_5(:, :, i), ~, ~] =  v_kmeans(MFCC, 5); % k = 5 clusters
+       [MFCC_Traning_5(:, :, i), ~, ~] =  v_kmeans(MFCC, 5); % k = 5 clusters
 end
 
-confusionMatrix = zeros(length(vowels_name));
+confusionMatrixFFT = zeros(length(vowels_name));
+confusionMatrixMFCC = zeros(length(vowels_name));
 % Test find confusion matrix
 for i = 1 : length(folders_name) % 1 -> 21 speaker
     for j = 1 : length(vowels_name) % 1 -> 5 vowels
-        [minDist, minPos] = Euclidean_Distance_Vowel(MFCC_Traning_5, [mfccOneVowel{j, i}]);
+        %tinh euclid cho mfcc
+        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
+        
+        %tinh euclid cho fft - kim
+        dist2_a = euclid(FFT_avg(:,:,1), mean([fftOneVowel{j, i}]));
+        dist2_e = euclid(FFT_avg(:, :, 2),mean([fftOneVowel{j, i}]));
+        dist2_i = euclid(FFT_avg(:, :, 3), mean([fftOneVowel{j, i}]));
+        dist2_o = euclid(FFT_avg(:, :, 4), mean([fftOneVowel{j, i}]));
+        dist2_u = euclid(FFT_avg(:, :, 5), mean([fftOneVowel{j, i}]));
+        [dist, minPosFFT] = min([dist2_a; dist2_e; dist2_i; dist2_o; dist2_u]);
+        
         %[minDist, minPos] = Euclidean_Distance_Vowel(MFCC_avg, Matrix_Average([mfccOneVowel{j, i}]));
-        confusionMatrix(j, minPos)= confusionMatrix(j, minPos) + 1;
+        confusionMatrixFFT(j, minPosMFCC)= confusionMatrixFFT(j, minPosMFCC) + 1;
+        confusionMatrixMFCC(j, minPosFFT)= confusionMatrixMFCC(j, minPosFFT) + 1;
     end
 end

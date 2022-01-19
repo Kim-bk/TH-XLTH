@@ -8,7 +8,7 @@ function [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowe
     nguongmean = 0;
     global thresholdArrayTay;
     thresholdArrayTay = 0;
-    path = 'C:\\Users\\Admin\\Downloads\\NguyenAmHuanLuyen-16k-20220105T023031Z-001\\NguyenAmHuanLuyen-16k\\';
+    path = 'C:\Users\ASUS\OneDrive\Desktop\Thi TH 2\NguyenAmHuanLuyen-16k\';
     for i = 1 : length(vowels_name)
         for j = 1 : length(folders_name)
             [STECel, first_index_stable(i, j), last_index_stable(i, j), Sig{i, j}, fs] = Bai1(strcat(path, char(folders_name(j, :)), '\\', char(vowels_name(i, :)), '.wav'));
@@ -19,8 +19,8 @@ function [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowe
     end
     hahaha = thresholdArrayTay / count;
     thresholdAvg = mean(thresholdArray);
-    fileID = fopen('haha.txt', 'a+');
-    fprintf(fileID,'%6.4f ', thresholdAvg);
+%     fileID = fopen('haha.txt', 'a+');
+%     fprintf(fileID,'%6.4f ', thresholdAvg);
 end
 
 

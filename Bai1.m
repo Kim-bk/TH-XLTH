@@ -22,10 +22,10 @@ function [STE_Line, first_index_stable, last_index_stable, Sig, Fs] = Bai1(fileN
     global thresholdArrayTay;
     thresholdArrayTay =thresholdArrayTay + threshold;
     SilenceArray = XacDinhKhoangLang(VowelArray, totalFrame);
-    fileID = fopen('haha.txt', 'a+');
-    fprintf(fileID,'%s \n',fileName);
-    fprintf(fileID,'%d ',SilenceArray);
-    fprintf(fileID,'\n');
+%     fileID = fopen('haha.txt', 'a+');
+%     fprintf(fileID,'%s \n',fileName);
+%     fprintf(fileID,'%d ',SilenceArray);
+%     fprintf(fileID,'\n');
 
     first_index_stable = 0;
     for i = 1: length(VowelArray)
