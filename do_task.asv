@@ -5,7 +5,7 @@ function [dffty_mean] = do_task(data, fs)
     num_frames = floor(n/frame_len);        %tong so frame cua tin hieu
     
     %phan frame cho tin hieu
-    frames = framing_kim(data, fs, frame_duration); 
+    frames = framing(data, fs, frame_duration); 
     f0 = zeros(1, num_frames);
 
     %tinh STE cho tung frames
@@ -75,4 +75,6 @@ function [dffty_mean] = do_task(data, fs)
     %tinh vector dac trung fft trung binh cua cac khung on dinh
      dffty_mean = dffty_sum / length(stable_frames);
      dffty_mean = reshape(dffty_mean,1, n_fft / 2);
+     vowel_fram
+
 end

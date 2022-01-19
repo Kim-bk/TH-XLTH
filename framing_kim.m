@@ -1,4 +1,4 @@
-function [frames] = framing(x, fs, frame_duration)
+function [frames] = framing_kim(x, fs, frame_duration)
     frame_size = round(frame_duration * fs); %kích thuoc 1 khung (mau) 
     n = length(x);                           %do dai tin hieu (mau)
     num_frames = floor(n/frame_size);        %tong so khung 

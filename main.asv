@@ -104,9 +104,9 @@ for j = 1 : num_files
   
     if(minimum(dist_5) == dist2_e)
         correct = correct + 1;
-        confusionMatrix(2,2) = confusionMatrix(2,2) + 1;
-    elseif(minimum(dist_5) == dist2_a)
-        confusionMatrix(2, 1) = confusionMatrix(2, 1)  + 1;
+        confusionMatrix(2,1) = confusionMatrix(2,1) + 1;
+    elseif(minimum(dist_5) == dist2_e)
+        confusionMatrix(2, 2) = confusionMatrix(2, 2)  + 1;
     elseif(minimum(dist_5) == dist2_i)
         confusionMatrix(2, 3) = confusionMatrix(2, 3)  + 1;
     elseif(minimum(dist_5) == dist2_o)
@@ -126,15 +126,15 @@ for j = 1 : num_files
    
     if(minimum(dist_2) == dist2_i)
         correct = correct + 1;
-     confusionMatrix(3,3) = confusionMatrix(3,3) + 1;
+     confusionMatrix(3,1) = confusionMatrix(2,1) + 1;
     elseif(minimum(dist_2) == dist2_e)
-        confusionMatrix(3, 2) = confusionMatrix(3, 2)  + 1;
-    elseif(minimum(dist_2) == dist2_a)
-        confusionMatrix(3, 1) = confusionMatrix(3, 1)  + 1;
+        confusionMatrix(2, 2) = confusionMatrix(2, 2)  + 1;
+    elseif(minimum(dist_2) == dist2_i)
+        confusionMatrix(2, 3) = confusionMatrix(2, 3)  + 1;
     elseif(minimum(dist_2) == dist2_o)
-         confusionMatrix(3, 4) = confusionMatrix(3,4)  + 1;
+         confusionMatrix(2, 4) = confusionMatrix(2,4)  + 1;
     elseif(minimum(dist_2) == dist2_u)
-         confusionMatrix(3, 5) = confusionMatrix(3, 5)  + 1;
+         confusionMatrix(2, 5) = confusionMatrix(2, 5)  + 1;
     end
     
   %O
@@ -148,15 +148,6 @@ for j = 1 : num_files
     
     if(minimum(dist_3) == dist2_o)
         correct = correct + 1;
-    confusionMatrix(4,4) = confusionMatrix(4,4) + 1;
-    elseif(minimum(dist_3) == dist2_e)
-        confusionMatrix(4, 2) = confusionMatrix(4, 2)  + 1;
-    elseif(minimum(dist_3) == dist2_i)
-        confusionMatrix(4, 3) = confusionMatrix(4, 3)  + 1;
-    elseif(minimum(dist_3) == dist2_a)
-         confusionMatrix(4, 1) = confusionMatrix(4,1)  + 1;
-    elseif(minimum(dist_3) == dist2_u)
-         confusionMatrix(4, 5) = confusionMatrix(4, 5)  + 1;
     end
     
     %U
@@ -170,15 +161,6 @@ for j = 1 : num_files
    
     if(minimum(dist_4) == dist2_u)
         correct = correct + 1;
-        confusionMatrix(5,5) = confusionMatrix(5,5) + 1;
-    elseif(minimum(dist_4) == dist2_e)
-        confusionMatrix(5, 2) = confusionMatrix(5, 2)  + 1;
-    elseif(minimum(dist_4) == dist2_i)
-        confusionMatrix(5, 3) = confusionMatrix(5, 3)  + 1;
-    elseif(minimum(dist_4) == dist2_o)
-         confusionMatrix(5, 4) = confusionMatrix(5,4)  + 1;
-    elseif(minimum(dist_4) == dist2_a)
-         confusionMatrix(5, 1) = confusionMatrix(5, 1)  + 1;
     end
     
     i = i + 5;
@@ -189,7 +171,6 @@ fprintf('Do chinh xac nhan dang: %0.2f phan tram\n', (correct / 105 ) * 100);
 %xuat dac trung trung binh cua 5 nguyen am 
 
 dactrung_mfcc(avg_a, avg_e, avg_e, avg_i, avg_o);
-confusionMatrix
 % dactrung_fft(avg_a, avg_e, avg_e, avg_i, avg_o);
 
 

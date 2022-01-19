@@ -1,4 +1,4 @@
-close all; clear all; clc;
+% close all; clear all; clc;
 folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
 vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
 
@@ -6,7 +6,7 @@ vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
 
 frame_duration = 0.03; %take frame duration 30msec
 
-path = 'C:\\Users\\Admin\\Downloads\\NguyenAmHuanLuyen-16k-20220105T023031Z-001\\NguyenAmHuanLuyen-16k\\';
+path = 'C:\Users\ASUS\OneDrive\Desktop\Thi TH 2\NguyenAmHuanLuyen-16k\';
 for i = 1 : length(vowels_name)
     for j = 1 : length(folders_name)
         [x, fs] = audioread(strcat(path, char(folders_name(j, :)), '\\', char(vowels_name(i, :)), '.wav'));
