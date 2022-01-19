@@ -1,30 +1,48 @@
 clear;
-
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\a.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\e.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\i.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\o.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\u.wav');
-    %
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\a.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\e.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\i.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\o.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\u.wav');
-    %
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\a.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\e.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\i.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\o.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\u.wav');
-    %
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\a.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\e.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\i.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\o.wav');
-    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\u.wav');
-
-function STE_Line=Bai1(fileName)
+    global count;
+    count = 0;
+    global thresholdArray;
+    thresholdArray = [];
+    global nguongmean;
+    nguongmean = 0;
+        global thresholdArrayTay;
+    thresholdArrayTay = 0; %mean là tb ðó
+    folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
+    vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
+    path = 'E:\\BaITapXLTHS\\NguyenAmHuanLuyen-16k\\';
+    for i = 1 : length(vowels_name)
+    for j = 1 : length(folders_name)
+        STECel =Bai1(strcat(path,char(folders_name(j, :)),'\\',char(vowels_name(i, :)),'.wav'));
+    end
+    end
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\a.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\e.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\i.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\o.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\01MDA\u.wav');
+%     %
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\a.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\e.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\i.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\o.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\02FVA\u.wav');
+%     %
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\a.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\e.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\i.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\o.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\03MAB\u.wav');
+%     %
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\a.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\e.wav');
+%     STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\i.wav');
+%    STECel= Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\o.wav');
+%     SilenceArray = Bai1('E:\BaITapXLTHS\NguyenAmHuanLuyen-16k\06FTB\u.wav');
+    hahaha = thresholdArrayTay / count 
+    nguongmean = mean(thresholdArray);
+    fileID = fopen("haha.txt","a+");
+     fprintf(fileID,'%6.4f ',nguongmean); % h?n c?ng gi?ng cái mean á
+function [STE_Line,SilenceArray]=Bai1(fileName)
     [Sig, Fs] = audioread(fileName);
     Sig = Sig./abs(max(Sig));
     samples = length(Sig);
@@ -39,21 +57,29 @@ function STE_Line=Bai1(fileName)
     [STECal_Line] = Chuan_Hoa(STE_Line);
     [STECal1] = Chuan_Hoa(STECal);
 
-    
+    %dc r?i ðó ng? ng? thêm m?y c?ng ðc luô 
 
-    %threshold =0.005;
+   % threshold =0.0266;
     threshold =ThresholdSolve(STECal1);
-
+    global count;
+    count = count + 1;
+    global thresholdArray;
+    thresholdArray(count) = threshold;
     VowelArray = XulyTiengNoi(totalFrame , STECal1 , threshold);
-
+     global thresholdArrayTay;
+     thresholdArrayTay =thresholdArrayTay + threshold;
     SilenceArray = XacDinhKhoangLang(VowelArray, totalFrame);
+    fileID = fopen("haha.txt","a+");
+    fprintf(fileID,'%s \n',fileName);
+    fprintf(fileID,'%d ',SilenceArray);
+    fprintf(fileID,'\n');
 
     figure('name',fileName);
 
     subplot(3,1,1);    
     p1=plot(Sig);
     %plot(STECal,'Color','red');
-    title('Phan tich vowel va  silence (STE)');
+    title('Phan tich vowel va silence (STE)');
     hold on;
     plot(STECal_Line,'Color','r');
     hold on; grid on;
@@ -72,6 +98,12 @@ function STE_Line=Bai1(fileName)
 
     xlabel('Thoi gian (s)'); 
     ylabel('Bien do');
+%     SilencthresholdthresholdeArray
+%     threshold
+%     frameLength
+%     frameTotalNoFrameShift
+% totalFrame
+nguongmeanhaha = mean(thresholdArray) % à hn l?y cái cu?i cùng thôi ng? ng? :V cái ni c?ng ðúng mà
 end
 
 
@@ -163,6 +195,5 @@ function SilenceArray = XacDinhKhoangLang(VowelArray, frameTotal) %xac dinh khoa
         end
     end
 end
-
 
 
