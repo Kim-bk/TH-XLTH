@@ -41,15 +41,18 @@ frame_duration = 0.03; %take frame duration 30msec
 
 [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowels(folders_name, vowels_name);
 
-MFCC_ORDER = 26;
+MFCC_ORDER = 13;
+NFFT = 1024;
 frameLength=floor(fs *  frame_duration);
 frameShiftLength=floor(fs * 0.015);
 figure;
 for i = 1 : length(vowels_name)
     MFCC=[];
+    fftHaftOfAVowelTotal = [];
     for j = 1 : length(folders_name)
         %ste = [STE{i, j}];
         [mfccOneVowel{i, j}] = [];
+        [fftHaftOfAVowel{i, j}] = [];
         %frameCurrent = [frames{i, j}];
         for k = first_index_stable(i, j) : last_index_stable(i, j)
            % if (ste(k) >= Tste_avg*0.1) % vowels
@@ -58,12 +61,17 @@ for i = 1 : length(vowels_name)
                 SignalCurrent = [Sig{i, j}];
                 %mfccMatrix  = melcepst(frameCurrent(k, :), fs, 'M', MFCC_ORDER, floor(3 * log(fs)), frameLength, frameShiftLength);
                 mfccMatrix  = melcepst(SignalCurrent(started:ended, 1).', fs, 'M', MFCC_ORDER, floor(3 * log(fs)), frameLength, frameShiftLength);
+                fftTotal = fft(hamming(frameLength) .* SignalCurrent(started:ended, 1), NFFT); % two sided spectrum
+                fftTotal = fftTotal.';
+                [fftHaftOfAVowel{i, j}] = [[fftHaftOfAVowel{i, j}]; fftTotal(1 : length(fftTotal)/2)];
                 [mfccOneVowel{i, j}] = [[mfccOneVowel{i, j}]; mfccMatrix];
            % end
         end
         MFCC = [MFCC; [mfccOneVowel{i, j}]];
+        fftHaftOfAVowelTotal = [fftHaftOfAVowelTotal; [fftHaftOfAVowel{i, j}]];
         %mfccOneVowel{i, j} = Matrix_Average([mfccOneVowel{i, j}]);
     end
+    [fftHaftOfAVowel_Kmeans(:, :, i), ~, ~] = v_kmeans(fftHaftOfAVowelTotal, 5); % k = 5 clusters
     [MFCC_avg(:, :, i)] = Matrix_Average(MFCC);
     subplot(5, 1, i);
     plot(MFCC_avg(:, :, i));
@@ -81,8 +89,9 @@ confusionMatrix = zeros(length(vowels_name));
 % Test find confusion matrix
 for i = 1 : length(folders_name) % 1 -> 21 speaker
     for j = 1 : length(vowels_name) % 1 -> 5 vowels
-        [minDist, minPos] = Euclidean_Distance_Vowel(MFCC_Traning_5, [mfccOneVowel{j, i}]);
-        %[minDist, minPos] = Euclidean_Distance_Vowel(MFCC_avg, Matrix_Average([mfccOneVowel{j, i}]));
+        %[minDist, minPos] = Euclidean_Distance_Vowel(MFCC_Traning_5, [mfccOneVowel{j, i}]);
+        [minDist, minPos] = Euclidean_Distance_Vowel(MFCC_avg, Matrix_Average([mfccOneVowel{j, i}]));
+        %[minDist, minPos] = Euclidean_Distance_Vowel(fftHaftOfAVowel_Kmeans, [fftHaftOfAVowel{i, j}]);
         confusionMatrix(j, minPos)= confusionMatrix(j, minPos) + 1;
     end
 end
