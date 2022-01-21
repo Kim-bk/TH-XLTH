@@ -156,8 +156,8 @@ end
 
     percent = countCorrectMFCC /105  * 100;
      percentFFT = countCorrectFFT /105  * 100;
-    txt = 'Số lượng file Correct (MFCC): ';
-    txtt = 'Số lượng file Correct (FFT): ';
+    txt = 'Percentage of correct files (MFCC): ';
+    txtt = 'Percentage of correct files (FFT): ';
     txt2 = strcat(txt,num2str(percent),'%')
     txt3 = strcat(txtt,num2str(percentFFT),'%')
 %     text(0,0.7,txt2,'FontSize',10)
