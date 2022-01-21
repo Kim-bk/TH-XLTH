@@ -184,7 +184,7 @@ end
 %     addStyle(uit,s,'column',6)
 
     t = readtable('Result.csv');
-    t3_data=t
+    t3_data=t;
     vars = {'Serial','Original','IdentificationMFCC','Result'};
     t = t(1:105,vars);
     fig = uifigure;
