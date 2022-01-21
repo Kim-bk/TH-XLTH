@@ -77,9 +77,9 @@ end
     
 confusionMatrixFFT = zeros(length(vowels_name));
 confusionMatrixMFCC = zeros(length(vowels_name));
-fileID = fopen("Result.csv","w");
+fileID = fopen('Result.csv','w');
 fprintf(fileID,'%s,%s,%s,%s\n','Serial','Original','IdentificationMFCC','Result');
-fileID = fopen("Result2.csv","w");
+fileID = fopen('Result2.csv','w');
 fprintf(fileID,'%s,%s,%s,%s,%s,%s\n','Serial','Original','IdentificationFFT','ResultFFT','IdentificationMFCC','ResultMFCC');
 % Test find confusion matrix
 count = 0;
@@ -103,7 +103,7 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
         firstFile = char(folders_name(i, :));
         original = char(vowels_name(j, :));
         compare = char(vowels_name(minPosMFCC, :));
-        fileID = fopen("Result.csv","a+");
+        fileID = fopen('Result.csv','a+');
         count = count + 1;
         fprintf(fileID,'%d,',count);
         fprintf(fileID,'%s,',strcat(firstFile,'/',original));
@@ -111,10 +111,10 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
 
         
         if (j == minPosMFCC)
-            fprintf(fileID,'%s',"Đúng");
+            fprintf(fileID,'%s','Correct');
             countCorrectMFCC = countCorrectMFCC + 1;
         else    
-            fprintf(fileID,'%s',"Sai");
+            fprintf(fileID,'%s','Incorrect');
         end
        
         fprintf(fileID,'\n');
@@ -125,7 +125,7 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
 %         original = char(vowels_name(j, :));
 %         compare2 = char(vowels_name(minPosMFCC, :));
 %         compare1 = char(vowels_name(minPosFFT, :));
-%         fileID = fopen("Result2.csv","a+");
+%         fileID = fopen('Result2.csv','a+');
 %         count = count + 1;
 %         fprintf(fileID,'%d,',count);
 %         fprintf(fileID,'%s,',strcat(firstFile,'/',original));
@@ -138,10 +138,10 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
         end
 %         fprintf(fileID,'%s,',compare2);
 %         if (j == minPosMFCC)
-%             fprintf(fileID,'%s',"Đúng");
+%             fprintf(fileID,'%s','Correct');
 %             countCorrectMFCC = countCorrectMFCC + 1;
 %         else    
-%             fprintf(fileID,'%s',"Sai");
+%             fprintf(fileID,'%s','Incorrect');
 %         end
 %        
 %         fprintf(fileID,'\n');
@@ -154,8 +154,8 @@ end
 
     percent = countCorrectMFCC /105  * 100;
      percentFFT = countCorrectFFT /105  * 100;
-    txt = 'Số lượng file đúng (MFCC): ';
-    txtt = 'Số lượng file đúng (FFT): ';
+    txt = 'Số lượng file Correct (MFCC): ';
+    txtt = 'Số lượng file Correct (FFT): ';
     txt2 = strcat(txt,num2str(percent),'%')
     txt3 = strcat(txtt,num2str(percentFFT),'%')
 %     text(0,0.7,txt2,'FontSize',10)
@@ -169,7 +169,7 @@ end
 %     fig.Position(3:4) = [500 200];
 %     txt_title = uicontrol('Style', 'text','String', 'My Example Title');
 %     uit = uitable(fig,'Data',t);
-%     styleIndices = 'Sai';
+%     styleIndices = 'Incorrect';
 %     uis = uistyle('HorizontalAlignment', 'center'); 
 %     addStyle(uit, uis, 'Column', 1)
 %     uit.ColumnSortable = true;
@@ -189,7 +189,7 @@ end
     fig.Position(3:4) = [500 200];
     txt_title = uicontrol('Style', 'text','String', 'My Example Title');
     uit = uitable(fig,'Data',t);
-    styleIndices = 'Sai';
+    styleIndices = 'Incorrect';
     uis = uistyle('HorizontalAlignment', 'center'); 
     addStyle(uit, uis, 'Column', 1)
     uit.ColumnSortable = true;
