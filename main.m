@@ -1,8 +1,7 @@
  close all; clear all; clc;
-    folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
+    %folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
     vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
-    folders_name2 = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
-
+    folders_name = ['23MTL'; '24FTL'; '25MLM'; '27MCM'; '28MVN'; '29MHN'; '30FTN'; '32MTP'; '33MHP'; '34MQP'; '35MMQ'; '36MAQ'; '37MDS';'38MDS'; '39MTS'; '40MHS'; '41MVS'; '42FQT';'43MNT'; '44MTT'; '45MDV'];
 frame_duration = 0.03; %take frame duration 30msec
 
 [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowels(folders_name, vowels_name);
@@ -89,17 +88,15 @@ countCorrectMFCC = 0;
 for i = 1 : length(folders_name) % 1 -> 21 speaker
     for j = 1 : length(vowels_name) % 1 -> 5 vowels
         %tinh euclid cho mfcc
-        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
-        
+        %[minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
+        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_Traning_5, [mfccOneVowel{j, i}]);
         %tinh euclid cho fft - kim
         dist2_a = euclid(FFT_avg(:,:,1), mean([fftOneVowel{j, i}]));
         dist2_e = euclid(FFT_avg(:, :, 2),mean([fftOneVowel{j, i}]));
         dist2_i = euclid(FFT_avg(:, :, 3), mean([fftOneVowel{j, i}]));
         dist2_o = euclid(FFT_avg(:, :, 4), mean([fftOneVowel{j, i}]));
         dist2_u = euclid(FFT_avg(:, :, 5), mean([fftOneVowel{j, i}]));
-        [dist, minPosFFT] = min([dist2_a; dist2_e; dist2_i; dist2_o; dist2_u]);
-        folders_name2 = cellstr(folders_name2);
-       
+        [dist, minPosFFT] = min([dist2_a; dist2_e; dist2_i; dist2_o; dist2_u]);       
         
         firstFile = char(folders_name(i, :));
         original = char(vowels_name(j, :));
@@ -212,3 +209,4 @@ end
     set(t2,'Data',confusionMatrixMFCC);
     set(t2, 'ColumnName', {'/a/', '/e/', '/i/', '/o/','/u/'});
     set(t2, 'RowName', {'/a/', '/e/', '/i/', '/o/','/u/'});
+    fclose('all');

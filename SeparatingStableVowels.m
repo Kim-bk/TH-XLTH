@@ -8,7 +8,8 @@ function [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowe
     nguongmean = 0;
     global thresholdArrayTay;
     thresholdArrayTay = 0;
-    path = 'C:\Users\ASUS\OneDrive\Desktop\Thi TH 2\NguyenAmHuanLuyen-16k\';
+   % path = 'D:\ITBOOK\ThirdYear\XuLyTinHieuSo\Thi TH\final\TH-XLTH\NguyenAmHuanLuyen-16k\';
+    path = 'D:\ITBOOK\ThirdYear\XuLyTinHieuSo\Thi TH\final\TH-XLTH\NguyenAmKiemThu-16k\';
     for i = 1 : length(vowels_name)
         for j = 1 : length(folders_name)
             [STECel, first_index_vowel_frame(i, j), last_index_vowel_frame(i, j), Sig{i, j}, fs] = Bai1(strcat(path, char(folders_name(j, :)), '\\', char(vowels_name(i, :)), '.wav'));
