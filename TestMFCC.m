@@ -11,7 +11,7 @@ MFCC_ORDER = 26;
 N_FFT = 1024;
 frameLength=floor(fs *  frame_duration);
 frameShiftLength=floor(fs * 0.015);
-figure;
+figure('Name','Dac trung 5 nguyen am theo mfcc');
 for i = 1 : length(vowels_name)
     MFCC=[];
     FFT = [];
@@ -65,7 +65,16 @@ for i = 1 : length(vowels_name)
 %    [MFCC_Traning_4(:, :, i), ~, ~] =  kmeanlbg(MFCC, 4); % k = 4 clusters
        [MFCC_Traning_5(:, :, i), ~, ~] =  v_kmeans(MFCC, 5); % k = 5 clusters
 end
-FFT_avg
+    figure('Name','Dac trung 5 nguyen am theo FFT');
+    for i = 1 : length(vowels_name)
+    subplot(5, 1, i);
+    plot(MFCC_avg(:, :, i));
+    legend('Spectral Envelope');
+    ylabel('Amplitude');
+    title(strcat('Vowel', {' '}, char(vowels_name(i, :))));
+    datacursormode on
+    end
+    
 confusionMatrixFFT = zeros(length(vowels_name));
 confusionMatrixMFCC = zeros(length(vowels_name));
 fileID = fopen("Result.csv","w");
@@ -123,10 +132,9 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
 %         fprintf(fileID,'%s,',compare1);
 % 
         if (j == minPosFFT)
-            fprintf(fileID,'%s',"Đúng,");
             countCorrectFFT = countCorrectFFT + 1;
         else    
-            fprintf(fileID,'%s',"Sai,");
+
         end
 %         fprintf(fileID,'%s,',compare2);
 %         if (j == minPosMFCC)
