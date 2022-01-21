@@ -1,6 +1,7 @@
-% close all; clear all; clc;
+ close all; clear all; clc;
     folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
     vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
+    folders_name2 = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
 
 frame_duration = 0.03; %take frame duration 30msec
 
@@ -77,6 +78,7 @@ for i = 1 : length(vowels_name)
     [FFT_avg(:, :, i)] = Matrix_Average(FFT);
     
 % xuat dac trung 5 nguyen am theo mfcc
+%     figure('Name','Dac trung 5 nguyen am theo mfcc');
 %     subplot(5, 1, i);
 %     plot(MFCC_avg(:, :, i));
 %     legend('Spectral Envelope');
@@ -85,7 +87,8 @@ for i = 1 : length(vowels_name)
 %     datacursormode on;
 
 %xuat dac trung 5 nguyen am theo fft
-    subplot(5, 1, i);
+    figure('Name','Dac trung 5 nguyen am theo mfcc');
+    subplot(6, 1, i);
     plot(FFT_avg(:, :, i));
     legend('Spectral Envelope');
     ylabel('Amplitude');
@@ -101,7 +104,14 @@ end
 
 confusionMatrixFFT = zeros(length(vowels_name));
 confusionMatrixMFCC = zeros(length(vowels_name));
+fileID = fopen("Result.csv","w");
+fprintf(fileID,'%s,%s,%s,%s\n','Serial','Original','IdentificationMFCC','Result');
+fileID = fopen("Result2.csv","w");
+fprintf(fileID,'%s,%s,%s,%s,%s,%s\n','Serial','Original','IdentificationFFT','ResultFFT','IdentificationMFCC','ResultMFCC');
 % Test find confusion matrix
+count = 0;
+countCorrectFFT = 0;
+countCorrectMFCC = 0;
 for i = 1 : length(folders_name) % 1 -> 21 speaker
     for j = 1 : length(vowels_name) % 1 -> 5 vowels
         %tinh euclid cho mfcc
@@ -114,9 +124,111 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
         dist2_o = euclid(FFT_avg(:, :, 4), mean([fftOneVowel{j, i}]));
         dist2_u = euclid(FFT_avg(:, :, 5), mean([fftOneVowel{j, i}]));
         [dist, minPosFFT] = min([dist2_a; dist2_e; dist2_i; dist2_o; dist2_u]);
+        folders_name2 = cellstr(folders_name2);
+       
+%         
+%         firstFile = char(folders_name(i, :));
+%         original = char(vowels_name(j, :));
+%         compare = char(vowels_name(minPosMFCC, :));
+%         fileID = fopen("Result2.csv","a+");
+%         count = count + 1;
+%         fprintf(fileID,'%d,',count);
+%         fprintf(fileID,'%s,',strcat(firstFile,'/',original));
+%         fprintf(fileID,'%s,',compare);
+% 
+%         
+%         if (j == minPosMFCC)
+%             fprintf(fileID,'%s',"Đúng");
+%             countCorrect = countCorrect + 1;
+%         else    
+%             fprintf(fileID,'%s',"Sai");
+%         end
+%        
+%         fprintf(fileID,'\n');
+
+
+        
+        firstFile = char(folders_name(i, :));
+        original = char(vowels_name(j, :));
+        compare2 = char(vowels_name(minPosMFCC, :));
+        compare1 = char(vowels_name(minPosFFT, :));
+        fileID = fopen("Result2.csv","a+");
+        count = count + 1;
+        fprintf(fileID,'%d,',count);
+        fprintf(fileID,'%s,',strcat(firstFile,'/',original));
+        fprintf(fileID,'%s,',compare1);
+
+        if (j == minPosFFT)
+            fprintf(fileID,'%s',"Đúng,");
+            countCorrectFFT = countCorrectFFT + 1;
+        else    
+            fprintf(fileID,'%s',"Sai,");
+        end
+        fprintf(fileID,'%s,',compare2);
+        if (j == minPosMFCC)
+            fprintf(fileID,'%s',"Đúng");
+            countCorrectMFCC = countCorrectMFCC + 1;
+        else    
+            fprintf(fileID,'%s',"Sai");
+        end
+       
+        fprintf(fileID,'\n');
         
         %[minDist, minPos] = Euclidean_Distance_Vowel(MFCC_avg, Matrix_Average([mfccOneVowel{j, i}]));
         confusionMatrixFFT(j, minPosMFCC)= confusionMatrixFFT(j, minPosMFCC) + 1;
         confusionMatrixMFCC(j, minPosFFT)= confusionMatrixMFCC(j, minPosFFT) + 1;
     end
 end
+
+    subplot(6,1,6)
+    percent = countCorrectMFCC /105  * 100;
+     percentFFT = countCorrectFFT /105  * 100;
+    txt = 'Số lượng file đúng (MFCC): ';
+    txtt = 'Số lượng file đúng (FFT): ';
+    txt2 = strcat(txt,num2str(percent),'%');
+    txt3 = strcat(txtt,num2str(percentFFT),'%');
+    text(0,0.7,txt2,'FontSize',10)
+    text(0,0.3,txt3,'FontSize',10)
+    
+    t = readtable('Result2.csv');
+    t
+    vars = {'Serial','Original','IdentificationFFT','ResultFFT','IdentificationMFCC','ResultMFCC'};
+    t = t(1:105,vars);
+    fig = uifigure;
+    fig.Position(3:4) = [500 200];
+    txt_title = uicontrol('Style', 'text','String', 'My Example Title');
+    uit = uitable(fig,'Data',t);
+    styleIndices = 'Sai';
+    uis = uistyle('HorizontalAlignment', 'center'); 
+    addStyle(uit, uis, 'Column', 1)
+    uit.ColumnSortable = true;
+    s = uistyle('BackgroundColor','#F5DEB3');
+    addStyle(uit,s,'column',3)
+    addStyle(uit,s,'column',4)
+
+%     t = readtable('Result.csv');
+%     t3_data=t
+%     vars = {'Serial','Original','IdentificationMFCC','Result'};
+%     t = t(1:105,vars);
+%     fig = uifigure;
+%     fig.Position(3:4) = [500 200];
+%     txt_title = uicontrol('Style', 'text','String', 'My Example Title');
+%     uit = uitable(fig,'Data',t);
+%     styleIndices = 'Sai';
+%     uis = uistyle('HorizontalAlignment', 'center'); 
+%     addStyle(uit, uis, 'Column', 1)
+%     uit.ColumnSortable = true;
+    
+    figure('Name','Ma tran nham lan FFT','NumberTitle','off');
+    t2=uitable;
+    set(t2,'Position',[0 2 500 150])
+    set(t2,'Data',confusionMatrixFFT);
+    set(t2, 'ColumnName', {'/a/', '/e/', '/i/', '/o/','/u/'});
+    set(t2, 'RowName', {'/a/', '/e/', '/i/', '/o/','/u/'});
+
+    figure('Name','Ma tran nham lan MFCC','NumberTitle','off');
+    t2=uitable;
+    set(t2,'Position',[0 2 500 150])
+    set(t2,'Data',confusionMatrixMFCC);
+    set(t2, 'ColumnName', {'/a/', '/e/', '/i/', '/o/','/u/'});
+    set(t2, 'RowName', {'/a/', '/e/', '/i/', '/o/','/u/'});
