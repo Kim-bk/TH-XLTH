@@ -1,7 +1,7 @@
  close all; clear all; clc;
-    folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
+    folders_name1 = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
     vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
-    folders_name2 = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
+    folders_name = ['23MTL'; '24FTL'; '25MLM'; '27MCM'; '28MVN'; '29MHN'; '30FTN'; '32MTP'; '33MHP'; '34MQP'; '35MMQ'; '36MAQ'; '37MDS';'38MDS'; '39MTS'; '40MHS'; '41MVS'; '42FQT';'43MNT'; '44MTT'; '45MDV'];
 
 frame_duration = 0.03; %take frame duration 30msec
 
@@ -11,7 +11,7 @@ MFCC_ORDER = 26;
 N_FFT = 1024;
 frameLength=floor(fs *  frame_duration);
 frameShiftLength=floor(fs * 0.015);
-figure('Name','Dac trung 5 nguyen am theo mfcc');
+figure('Name','Dac trung 5 nguyen am theo FFT');
 for i = 1 : length(vowels_name)
     MFCC=[];
     FFT = [];
@@ -64,8 +64,9 @@ for i = 1 : length(vowels_name)
 %    [MFCC_Traning_3(:, :, i), ~, ~] =  kmeanlbg(MFCC, 3); % k = 3 clusters
 %    [MFCC_Traning_4(:, :, i), ~, ~] =  kmeanlbg(MFCC, 4); % k = 4 clusters
        [MFCC_Traning_5(:, :, i), ~, ~] =  v_kmeans(MFCC, 5); % k = 5 clusters
+       [MFCC_Traning(:, :, i), ~, ~] =  v_kmeans(MFCC, 10);
 end
-    figure('Name','Dac trung 5 nguyen am theo FFT');
+    figure('Name','Dac trung 5 nguyen am theo MFCC');
     for i = 1 : length(vowels_name)
     subplot(5, 1, i);
     plot(MFCC_avg(:, :, i));
@@ -88,8 +89,9 @@ countCorrectMFCC = 0;
 for i = 1 : length(folders_name) % 1 -> 21 speaker
     for j = 1 : length(vowels_name) % 1 -> 5 vowels
         %tinh euclid cho mfcc
-        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
-        
+        %[minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
+        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_Traning, [mfccOneVowel{j, i}]);
+
         %tinh euclid cho fft - kim
         dist2_a = euclid(FFT_avg(:,:,1), mean([fftOneVowel{j, i}]));
         dist2_e = euclid(FFT_avg(:, :, 2),mean([fftOneVowel{j, i}]));
@@ -97,7 +99,6 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
         dist2_o = euclid(FFT_avg(:, :, 4), mean([fftOneVowel{j, i}]));
         dist2_u = euclid(FFT_avg(:, :, 5), mean([fftOneVowel{j, i}]));
         [dist, minPosFFT] = min([dist2_a; dist2_e; dist2_i; dist2_o; dist2_u]);
-        folders_name2 = cellstr(folders_name2);
        
         
         firstFile = char(folders_name(i, :));
@@ -154,8 +155,8 @@ end
 
     percent = countCorrectMFCC /105  * 100;
      percentFFT = countCorrectFFT /105  * 100;
-    txt = 'Số lượng file Correct (MFCC): ';
-    txtt = 'Số lượng file Correct (FFT): ';
+    txt = 'Số lượng file đúng (MFCC): ';
+    txtt = 'Số lượng file đúng (FFT): ';
     txt2 = strcat(txt,num2str(percent),'%')
     txt3 = strcat(txtt,num2str(percentFFT),'%')
 %     text(0,0.7,txt2,'FontSize',10)
@@ -182,7 +183,7 @@ end
 %     addStyle(uit,s,'column',6)
 
     t = readtable('Result.csv');
-    t3_data=t
+    t3_data=t;
     vars = {'Serial','Original','IdentificationMFCC','Result'};
     t = t(1:105,vars);
     fig = uifigure;
