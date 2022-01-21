@@ -6,7 +6,7 @@ frame_duration = 0.03; %take frame duration 30msec
 
 [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowels(folders_name, vowels_name);
 
-MFCC_ORDER = 13;
+MFCC_ORDER = 26;
 N_FFT = 1024;
 frameLength=floor(fs *  frame_duration);
 frameShiftLength=floor(fs * 0.015);
