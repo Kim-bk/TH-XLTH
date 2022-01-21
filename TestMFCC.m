@@ -105,7 +105,7 @@ confusionMatrixMFCC = zeros(length(vowels_name));
 for i = 1 : length(folders_name) % 1 -> 21 speaker
     for j = 1 : length(vowels_name) % 1 -> 5 vowels
         %tinh euclid cho mfcc
-        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
+        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_Traning_5, [mfccOneVowel{j, i}]);
         
         %tinh euclid cho fft - kim
         dist2_a = euclid(FFT_avg(:,:,1), mean([fftOneVowel{j, i}]));
