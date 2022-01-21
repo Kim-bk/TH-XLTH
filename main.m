@@ -1,196 +1,214 @@
-clc; close all; clear all;
+ close all; clear all; clc;
+    folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
+    vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
+    folders_name2 = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
 
-folders_name = ['01MDA' '02FVA' '03MAB' '04MHB' '05MVB' '06FTB' '07FTC' '08MLD' '09MPD' '10MSD' '11MVD' '12FTD' '14FHH' '15MMH' '16FTH' '17MTH' '18MNK' '19MXK' '20MVK' '21MTL' '22MHL'];
-path = 'C:\Users\ASUS\OneDrive\Desktop\Thi TH 2\NguyenAmHuanLuyen-16k\';
+frame_duration = 0.03; %take frame duration 30msec
 
-% folders_name = ['23MTL' '24FTL' '25MLM' '27MCM' '28MVN' '29MHN' '30FTN' '32MTP' '33MHP' '34MQP' '35MMQ' '36MAQ' '37MDS' '38MDS' '39MTS' '40MHS' '41MVS' '42FQT' '43MNT' '44MTT' '45MDV'];
-% path = 'C:\Users\ASUS\OneDrive\Desktop\Thi TH 2\NguyenAmKiemThu-16k\';
-num_files = length(folders_name) / 5;
-vowels = ['a' 'e' 'i' 'o' 'u'];
+[first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowels(folders_name, vowels_name);
 
-%tao mang luu cac tong cac vector dac trung mfcc tinh duoc tu 105 file
-sum_a = 0;
-sum_e  = 0;
-sum_i  = 0;
-sum_o =0;
-sum_u =0;
+MFCC_ORDER = 13;
+N_FFT = 1024;
+frameLength=floor(fs *  frame_duration);
+frameShiftLength=floor(fs * 0.015);
+figure('Name','Dac trung 5 nguyen am theo FFT');
+for i = 1 : length(vowels_name)
+    MFCC=[];
+    FFT = [];
+    for j = 1 : length(folders_name)
+        %ste = [STE{i, j}];
+        [mfccOneVowel{i, j}] = [];
+        [fftOneVowel{i, j}] = [];
+        %frameCurrent = [frames{i, j}];
+        for k = first_index_stable(i, j) : last_index_stable(i, j)
+           % if (ste(k) >= Tste_avg*0.1) % vowels
+                started = (frameLength * (k - 1) / 2) + 1;
+                ended =  started + frameLength - 1 ;
+                SignalCurrent = [Sig{i, j}];
+                %mfccMatrix  = melcepst(frameCurrent(k, :), fs, 'M', MFCC_ORDER, floor(3 * log(fs)), frameLength, frameShiftLength);
+                mfccMatrix  = melcepst(SignalCurrent(started:ended, 1).', fs, 'M', MFCC_ORDER, floor(3 * log(fs)), frameLength, frameShiftLength);
+                [mfccOneVowel{i, j}] = [[mfccOneVowel{i, j}]; mfccMatrix];
 
-confusionMatrix = zeros(5);
-
-i = 1;
-for j = 1 : num_files
-    tg = [folders_name(i) folders_name(i+1) folders_name(i+2) folders_name(i+3) folders_name(i+4)];
-    
-    %lay duoc duong dan tuyet doi
-    file_name_a = [path tg '\a.wav']; %doc cac file la nguyen am A
-    file_name_e = [path tg '\e.wav']; %doc cac file la nguyen am E
-    file_name_i = [path tg '\i.wav']; %doc cac file la nguyen am I
-    file_name_o = [path tg '\o.wav']; %doc cac file la nguyen am O
-    file_name_u = [path tg '\u.wav']; %doc cac file la nguyen am U
-    
-    %doc tin hieu
-    [data1, fs1] = audioread(file_name_a);
-    [data2, fs2] = audioread(file_name_e);
-    [data3, fs3] = audioread(file_name_i);
-    [data4, fs4] = audioread(file_name_o);
-    [data5, fs5] = audioread(file_name_u);
-    
-    %tinh tong cac vector mfcc theo tung nguyen am
-    sum_a = sum_a + do_task(data1,fs1);  
-    sum_e = sum_e + do_task(data2,fs2);   
-    sum_i = sum_i + do_task(data3,fs3);   
-    sum_o = sum_o + do_task(data4,fs4);   
-    sum_u = sum_u + do_task(data5,fs5);   
-    
-    i = i + 5;
-end
-
-%tinh trung binh cac vector mfcc cua tung nguyen am
-avg_a = sum_a / num_files;
-avg_e = sum_e / num_files;
-avg_i = sum_i / num_files;
-avg_o = sum_o / num_files;
-avg_u = sum_u / num_files;
-
-%chay lai 105 file nguyen am de tinh do chinh x�c
-i = 1;
-correct = 0;
-for j = 1 : num_files
-    tg = [folders_name(i) folders_name(i+1) folders_name(i+2) folders_name(i+3) folders_name(i+4)];
-    
-    file_name_a = [path tg '\a.wav']; %doc cac file la nguyen am A
-    file_name_e = [path tg '\e.wav']; %doc cac file la nguyen am E
-    file_name_i = [path tg '\i.wav']; %doc cac file la nguyen am I
-    file_name_o = [path tg '\o.wav']; %doc cac file la nguyen am O
-    file_name_u = [path tg '\u.wav']; %doc cac file la nguyen am U
-    
-    [data1, fs1] = audioread(file_name_a);
-    [data2, fs2] = audioread(file_name_e);
-    [data3, fs3] = audioread(file_name_i);
-    [data4, fs4] = audioread(file_name_o);
-    [data5, fs5] = audioread(file_name_u);
-    
-    %Tinh khoang cach -  Euclid cho tung nguyen am
-    %A
-    mfcc_a = do_task(data1,fs1);
-    dist2_a = euclid(mfcc_a, avg_a);
-    dist2_e = euclid(mfcc_a, avg_e);
-    dist2_i = euclid(mfcc_a, avg_i);
-    dist2_u = euclid(mfcc_a, avg_u);
-    dist2_o = euclid(mfcc_a, avg_o);
-    dist_1 = [dist2_a, dist2_e, dist2_i, dist2_u, dist2_o];
-   
-    if(minimum(dist_1) == dist2_a)
-        correct = correct + 1;
-        confusionMatrix(1,1) = confusionMatrix(1,1) + 1;
-    elseif(minimum(dist_1) == dist2_e)
-        confusionMatrix(1, 2) = confusionMatrix(1, 2)  + 1;
-    elseif(minimum(dist_1) == dist2_i)
-        confusionMatrix(1, 3) = confusionMatrix(1, 3)  + 1;
-    elseif(minimum(dist_1) == dist2_o)
-         confusionMatrix(1, 4) = confusionMatrix(1,4)  + 1;
-    elseif(minimum(dist_1) == dist2_u)
-         confusionMatrix(1, 5) = confusionMatrix(1, 5)  + 1;
+                %Tinh pho bien do
+                fftMatrix = abs(fft(SignalCurrent(started:ended, 1), N_FFT));
+                fftMatrix = fftMatrix(1 : round(length(fftMatrix) / 2));
+                [fftOneVowel{i, j}] = [[fftOneVowel{i, j}]; reshape(fftMatrix,1, N_FFT / 2)];
+           % end
+        end
+        MFCC = [MFCC; [mfccOneVowel{i, j}]];
+        FFT  = [FFT; [fftOneVowel{i,j}]];
+        %mfccOneVowel{i, j} = Matrix_Average([mfccOneVowel{i, j}]);
     end
+    [MFCC_avg(:, :, i)] = Matrix_Average(MFCC);
+    [FFT_avg(:, :, i)] = Matrix_Average(FFT);
+    
+% xuat dac trung 5 nguyen am theo mfcc
+%     figure('Name','Dac trung 5 nguyen am theo mfcc');
+%     subplot(5, 1, i);
+%     plot(MFCC_avg(:, :, i));
+%     legend('Spectral Envelope');
+%     ylabel('Amplitude');
+%     title(strcat('Vowel', {' '}, char(vowels_name(i, :))));
+%     datacursormode on;
+
+%xuat dac trung 5 nguyen am theo fft
  
-     %E
-    mfcc_e = do_task(data2,fs2);   
-    dist2_a = euclid(mfcc_e, avg_a);
-    dist2_e = euclid(mfcc_e, avg_e);
-    dist2_i = euclid(mfcc_e, avg_i);
-    dist2_u = euclid(mfcc_e, avg_u);
-    dist2_o = euclid(mfcc_e, avg_o);
-    dist_5 = [dist2_a, dist2_e, dist2_i, dist2_u, dist2_o];
-  
-    if(minimum(dist_5) == dist2_e)
-        correct = correct + 1;
-        confusionMatrix(2,2) = confusionMatrix(2,2) + 1;
-    elseif(minimum(dist_5) == dist2_a)
-        confusionMatrix(2, 1) = confusionMatrix(2, 1)  + 1;
-    elseif(minimum(dist_5) == dist2_i)
-        confusionMatrix(2, 3) = confusionMatrix(2, 3)  + 1;
-    elseif(minimum(dist_5) == dist2_o)
-         confusionMatrix(2, 4) = confusionMatrix(2,4)  + 1;
-    elseif(minimum(dist_5) == dist2_u)
-         confusionMatrix(2, 5) = confusionMatrix(2, 5)  + 1;
+    subplot(5, 1, i);
+    plot(FFT_avg(:, :, i));
+    legend('Spectral Envelope');
+    ylabel('Amplitude');
+    title(strcat('Vowel', {' '}, char(vowels_name(i, :))));
+    datacursormode on;
+
+
+%    [MFCC_Traning_2(:, :, i), ~, ~] =  v_kmeans(MFCC, 2); % k = 2 clusters
+%    [MFCC_Traning_3(:, :, i), ~, ~] =  kmeanlbg(MFCC, 3); % k = 3 clusters
+%    [MFCC_Traning_4(:, :, i), ~, ~] =  kmeanlbg(MFCC, 4); % k = 4 clusters
+       [MFCC_Traning_5(:, :, i), ~, ~] =  v_kmeans(MFCC, 5); % k = 5 clusters
+end
+    figure('Name','Dac trung 5 nguyen am theo MFCC');
+    for i = 1 : length(vowels_name)
+    subplot(5, 1, i);
+    plot(MFCC_avg(:, :, i));
+    legend('Spectral Envelope');
+    ylabel('Amplitude');
+    title(strcat('Vowel', {' '}, char(vowels_name(i, :))));
+    datacursormode on
     end
     
-    %I
-    mfcc_i = do_task(data3,fs3);   
-    dist2_a = euclid(mfcc_i, avg_a);
-    dist2_e = euclid(mfcc_i, avg_e);
-    dist2_i = euclid(mfcc_i, avg_i);
-    dist2_u = euclid(mfcc_i, avg_u);
-    dist2_o = euclid(mfcc_i, avg_o);
-    dist_2 = [dist2_a, dist2_e, dist2_i, dist2_u, dist2_o];
-   
-    if(minimum(dist_2) == dist2_i)
-        correct = correct + 1;
-     confusionMatrix(3,3) = confusionMatrix(3,3) + 1;
-    elseif(minimum(dist_2) == dist2_e)
-        confusionMatrix(3, 2) = confusionMatrix(3, 2)  + 1;
-    elseif(minimum(dist_2) == dist2_a)
-        confusionMatrix(3, 1) = confusionMatrix(3, 1)  + 1;
-    elseif(minimum(dist_2) == dist2_o)
-         confusionMatrix(3, 4) = confusionMatrix(3,4)  + 1;
-    elseif(minimum(dist_2) == dist2_u)
-         confusionMatrix(3, 5) = confusionMatrix(3, 5)  + 1;
+confusionMatrixFFT = zeros(length(vowels_name));
+confusionMatrixMFCC = zeros(length(vowels_name));
+fileID = fopen('Result.csv','w');
+fprintf(fileID,'%s,%s,%s,%s\n','Serial','Original','IdentificationMFCC','Result');
+fileID = fopen('Result2.csv','w');
+fprintf(fileID,'%s,%s,%s,%s,%s,%s\n','Serial','Original','IdentificationFFT','ResultFFT','IdentificationMFCC','ResultMFCC');
+% Test find confusion matrix
+count = 0;
+countCorrectFFT = 0;
+countCorrectMFCC = 0;
+for i = 1 : length(folders_name) % 1 -> 21 speaker
+    for j = 1 : length(vowels_name) % 1 -> 5 vowels
+        %tinh euclid cho mfcc
+        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
+        
+        %tinh euclid cho fft - kim
+        dist2_a = euclid(FFT_avg(:,:,1), mean([fftOneVowel{j, i}]));
+        dist2_e = euclid(FFT_avg(:, :, 2),mean([fftOneVowel{j, i}]));
+        dist2_i = euclid(FFT_avg(:, :, 3), mean([fftOneVowel{j, i}]));
+        dist2_o = euclid(FFT_avg(:, :, 4), mean([fftOneVowel{j, i}]));
+        dist2_u = euclid(FFT_avg(:, :, 5), mean([fftOneVowel{j, i}]));
+        [dist, minPosFFT] = min([dist2_a; dist2_e; dist2_i; dist2_o; dist2_u]);
+        folders_name2 = cellstr(folders_name2);
+       
+        
+        firstFile = char(folders_name(i, :));
+        original = char(vowels_name(j, :));
+        compare = char(vowels_name(minPosMFCC, :));
+        fileID = fopen('Result.csv','a+');
+        count = count + 1;
+        fprintf(fileID,'%d,',count);
+        fprintf(fileID,'%s,',strcat(firstFile,'/',original));
+        fprintf(fileID,'%s,',compare);
+
+        
+        if (j == minPosMFCC)
+            fprintf(fileID,'%s','Correct');
+            countCorrectMFCC = countCorrectMFCC + 1;
+        else    
+            fprintf(fileID,'%s','Incorrect');
+        end
+       
+        fprintf(fileID,'\n');
+
+
+        
+%         firstFile = char(folders_name(i, :));
+%         original = char(vowels_name(j, :));
+%         compare2 = char(vowels_name(minPosMFCC, :));
+%         compare1 = char(vowels_name(minPosFFT, :));
+%         fileID = fopen('Result2.csv','a+');
+%         count = count + 1;
+%         fprintf(fileID,'%d,',count);
+%         fprintf(fileID,'%s,',strcat(firstFile,'/',original));
+%         fprintf(fileID,'%s,',compare1);
+% 
+        if (j == minPosFFT)
+            countCorrectFFT = countCorrectFFT + 1;
+        else    
+
+        end
+%         fprintf(fileID,'%s,',compare2);
+%         if (j == minPosMFCC)
+%             fprintf(fileID,'%s','Correct');
+%             countCorrectMFCC = countCorrectMFCC + 1;
+%         else    
+%             fprintf(fileID,'%s','Incorrect');
+%         end
+%        
+%         fprintf(fileID,'\n');
+        
+        %[minDist, minPos] = Euclidean_Distance_Vowel(MFCC_avg, Matrix_Average([mfccOneVowel{j, i}]));
+        
+        %Ma tran nham lan cua mfcc
+        confusionMatrixMFCC(j, minPosMFCC)= confusionMatrixMFCC(j, minPosMFCC) + 1;
+        
+        %Ma tran nham lan cua fft
+        confusionMatrixFFT(j, minPosFFT)= confusionMatrixFFT(j, minPosFFT) + 1;
     end
-    
-  %O
-    mfcc_o = do_task(data4,fs4);   
-    dist2_a = euclid(mfcc_o, avg_a);
-    dist2_e = euclid(mfcc_o, avg_e);
-    dist2_i = euclid(mfcc_o, avg_i);
-    dist2_u = euclid(mfcc_o, avg_u);
-    dist2_o = euclid(mfcc_o, avg_o);
-    dist_3 = [dist2_a, dist2_e, dist2_i, dist2_u, dist2_o];
-    
-    if(minimum(dist_3) == dist2_o)
-        correct = correct + 1;
-    confusionMatrix(4,4) = confusionMatrix(4,4) + 1;
-    elseif(minimum(dist_3) == dist2_e)
-        confusionMatrix(4, 2) = confusionMatrix(4, 2)  + 1;
-    elseif(minimum(dist_3) == dist2_i)
-        confusionMatrix(4, 3) = confusionMatrix(4, 3)  + 1;
-    elseif(minimum(dist_3) == dist2_a)
-         confusionMatrix(4, 1) = confusionMatrix(4,1)  + 1;
-    elseif(minimum(dist_3) == dist2_u)
-         confusionMatrix(4, 5) = confusionMatrix(4, 5)  + 1;
-    end
-    
-    %U
-    mfcc_u = do_task(data5,fs5);
-    dist2_a = euclid(mfcc_u, avg_a);
-    dist2_e = euclid(mfcc_u, avg_e);
-    dist2_i = euclid(mfcc_u, avg_i);
-    dist2_u = euclid(mfcc_u, avg_u);
-    dist2_o = euclid(mfcc_u, avg_o);
-    dist_4= [dist2_a, dist2_e, dist2_i, dist2_u, dist2_o];
-   
-    if(minimum(dist_4) == dist2_u)
-        correct = correct + 1;
-        confusionMatrix(5,5) = confusionMatrix(5,5) + 1;
-    elseif(minimum(dist_4) == dist2_e)
-        confusionMatrix(5, 2) = confusionMatrix(5, 2)  + 1;
-    elseif(minimum(dist_4) == dist2_i)
-        confusionMatrix(5, 3) = confusionMatrix(5, 3)  + 1;
-    elseif(minimum(dist_4) == dist2_o)
-         confusionMatrix(5, 4) = confusionMatrix(5,4)  + 1;
-    elseif(minimum(dist_4) == dist2_a)
-         confusionMatrix(5, 1) = confusionMatrix(5, 1)  + 1;
-    end
-    
-    i = i + 5;
 end
 
-fprintf('So Files xac dinh dung: %d/105 Files\n', correct);
-fprintf('Do chinh xac nhan dang: %0.2f phan tram\n', (correct / 105 ) * 100);
-%xuat dac trung trung binh cua 5 nguyen am 
+    percent = countCorrectMFCC /105  * 100;
+     percentFFT = countCorrectFFT /105  * 100;
+    txt = 'Số lượng file Correct (MFCC): ';
+    txtt = 'Số lượng file Correct (FFT): ';
+    txt2 = strcat(txt,num2str(percent),'%')
+    txt3 = strcat(txtt,num2str(percentFFT),'%')
+%     text(0,0.7,txt2,'FontSize',10)
+%     text(0,0.3,txt3,'FontSize',10)
+    
+%     t = readtable('Result2.csv');
+%     t
+%     vars = {'Serial','Original','IdentificationFFT','ResultFFT','IdentificationMFCC','ResultMFCC'};
+%     t = t(1:105,vars);
+%     fig = uifigure;
+%     fig.Position(3:4) = [500 200];
+%     txt_title = uicontrol('Style', 'text','String', 'My Example Title');
+%     uit = uitable(fig,'Data',t);
+%     styleIndices = 'Incorrect';
+%     uis = uistyle('HorizontalAlignment', 'center'); 
+%     addStyle(uit, uis, 'Column', 1)
+%     uit.ColumnSortable = true;
+%     s = uistyle('BackgroundColor','#F5DEB3');
+%     addStyle(uit,s,'column',3)
+%     addStyle(uit,s,'column',4)
+%     
+%     s = uistyle('BackgroundColor','#F5F5F5');
+%     addStyle(uit,s,'column',5)
+%     addStyle(uit,s,'column',6)
 
-dactrung_mfcc(avg_a, avg_e, avg_e, avg_i, avg_o);
-confusionMatrix
-% dactrung_fft(avg_a, avg_e, avg_e, avg_i, avg_o);
+    t = readtable('Result.csv');
+    t3_data=t
+    vars = {'Serial','Original','IdentificationMFCC','Result'};
+    t = t(1:105,vars);
+    fig = uifigure;
+    fig.Position(3:4) = [500 200];
+    txt_title = uicontrol('Style', 'text','String', 'My Example Title');
+    uit = uitable(fig,'Data',t);
+    styleIndices = 'Incorrect';
+    uis = uistyle('HorizontalAlignment', 'center'); 
+    addStyle(uit, uis, 'Column', 1)
+    uit.ColumnSortable = true;
+    
+    figure('Name','Ma tran nham lan FFT','NumberTitle','off');
+    t2=uitable;
+    set(t2,'Position',[0 2 500 150])
+    set(t2,'Data',confusionMatrixFFT);
+    set(t2, 'ColumnName', {'/a/', '/e/', '/i/', '/o/','/u/'});
+    set(t2, 'RowName', {'/a/', '/e/', '/i/', '/o/','/u/'});
 
-
-
+    figure('Name','Ma tran nham lan MFCC','NumberTitle','off');
+    t2=uitable;
+    set(t2,'Position',[0 2 500 150])
+    set(t2,'Data',confusionMatrixMFCC);
+    set(t2, 'ColumnName', {'/a/', '/e/', '/i/', '/o/','/u/'});
+    set(t2, 'RowName', {'/a/', '/e/', '/i/', '/o/','/u/'});
