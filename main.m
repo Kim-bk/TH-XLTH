@@ -192,8 +192,8 @@ end
     txt_title = uicontrol('Style', 'text','String', 'My Example Title');
     uit = uitable(fig,'Data',t);
     styleIndices = 'Incorrect';
-    uis = uistyle('HorizontalAlignment', 'center'); 
-    addStyle(uit, uis, 'Column', 1)
+%     uis = uistyle('HorizontalAlignment', 'center'); 
+%     addStyle(uit, uis, 'Column', 1)
     uit.ColumnSortable = true;
     
     figure('Name','Ma tran nham lan FFT','NumberTitle','off');
