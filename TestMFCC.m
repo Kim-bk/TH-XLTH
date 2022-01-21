@@ -1,4 +1,4 @@
-% close all; clear all; clc;
+close all; clear all; clc;
     folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
     vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
 
@@ -41,7 +41,7 @@ frame_duration = 0.03; %take frame duration 30msec
 
 [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowels(folders_name, vowels_name);
 
-MFCC_ORDER = 26;
+MFCC_ORDER = 13;
 N_FFT = 1024;
 frameLength=floor(fs *  frame_duration);
 frameShiftLength=floor(fs * 0.015);
@@ -116,7 +116,11 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
         [dist, minPosFFT] = min([dist2_a; dist2_e; dist2_i; dist2_o; dist2_u]);
         
         %[minDist, minPos] = Euclidean_Distance_Vowel(MFCC_avg, Matrix_Average([mfccOneVowel{j, i}]));
-        confusionMatrixFFT(j, minPosMFCC)= confusionMatrixFFT(j, minPosMFCC) + 1;
-        confusionMatrixMFCC(j, minPosFFT)= confusionMatrixMFCC(j, minPosFFT) + 1;
+        
+        %Ma tran nham lan cua mfcc
+        confusionMatrixMFCC(j, minPosMFCC)= confusionMatrixMFCC(j, minPosMFCC) + 1;
+        
+        %Ma tran nham lan cua fft
+        confusionMatrixFFT(j, minPosFFT)= confusionMatrixFFT(j, minPosFFT) + 1;
     end
 end
