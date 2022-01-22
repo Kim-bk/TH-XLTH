@@ -9,7 +9,7 @@ function [first_index_stable, last_index_stable, Sig, fs] = SeparatingStableVowe
     global thresholdArrayTay;
     thresholdArrayTay = 0;
 
-    path = 'C:\\Users\Admin\\Downloads\\NguyenAmHuanLuyen-16k-20220105T023031Z-001\\NguyenAmHuanLuyen-16k\';
+    path = 'C:\Users\Admin\Downloads\NguyenAmHuanLuyen-16k-20220105T023031Z-001\NguyenAmHuanLuyen-16k\';
 
     for i = 1 : length(vowels_name)
         for j = 1 : length(folders_name)

@@ -14,7 +14,7 @@ Serial,Original,IdentificationMFCC,Result
 13,03MAB/i,i,Correct
 14,03MAB/o,o,Correct
 15,03MAB/u,i,Incorrect
-16,04MHB/a,o,Incorrect
+16,04MHB/a,a,Correct
 17,04MHB/e,e,Correct
 18,04MHB/i,i,Correct
 19,04MHB/o,o,Correct
@@ -34,7 +34,7 @@ Serial,Original,IdentificationMFCC,Result
 33,07FTC/i,i,Correct
 34,07FTC/o,o,Correct
 35,07FTC/u,u,Correct
-36,08MLD/a,a,Correct
+36,08MLD/a,e,Incorrect
 37,08MLD/e,e,Correct
 38,08MLD/i,i,Correct
 39,08MLD/o,o,Correct
@@ -52,9 +52,9 @@ Serial,Original,IdentificationMFCC,Result
 51,11MVD/a,a,Correct
 52,11MVD/e,e,Correct
 53,11MVD/i,i,Correct
-54,11MVD/o,u,Incorrect
+54,11MVD/o,o,Correct
 55,11MVD/u,u,Correct
-56,12FTD/a,a,Correct
+56,12FTD/a,e,Incorrect
 57,12FTD/e,e,Correct
 58,12FTD/i,i,Correct
 59,12FTD/o,o,Correct
@@ -75,7 +75,7 @@ Serial,Original,IdentificationMFCC,Result
 74,16FTH/o,o,Correct
 75,16FTH/u,u,Correct
 76,17MTH/a,a,Correct
-77,17MTH/e,e,Correct
+77,17MTH/e,a,Incorrect
 78,17MTH/i,i,Correct
 79,17MTH/o,o,Correct
 80,17MTH/u,u,Correct
@@ -97,7 +97,7 @@ Serial,Original,IdentificationMFCC,Result
 96,21MTL/a,a,Correct
 97,21MTL/e,e,Correct
 98,21MTL/i,i,Correct
-99,21MTL/o,a,Incorrect
+99,21MTL/o,o,Correct
 100,21MTL/u,u,Correct
 101,22MHL/a,a,Correct
 102,22MHL/e,e,Correct

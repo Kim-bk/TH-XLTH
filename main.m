@@ -2,7 +2,12 @@ close all; clear all; clc;
 
 folders_name = ['01MDA'; '02FVA'; '03MAB'; '04MHB'; '05MVB'; '06FTB'; '07FTC'; '08MLD'; '09MPD'; '10MSD'; '11MVD'; '12FTD'; '14FHH';'15MMH'; '16FTH'; '17MTH'; '18MNK'; '19MXK'; '20MVK';'21MTL'; '22MHL'];
 vowels_name = ['a'; 'e'; 'i'; 'o'; 'u'];
-%folders_name = ['23MTL'; '24FTL'; '25MLM'; '27MCM'; '28MVN'; '29MHN'; '30FTN'; '32MTP'; '33MHP'; '34MQP'; '35MMQ'; '36MAQ'; '37MDS';'38MDS'; '39MTS'; '40MHS'; '41MVS'; '42FQT';'43MNT'; '44MTT'; '45MDV'];
+% folders_name = ['23MTL'; '24FTL'; '25MLM'; '27MCM'; '28MVN'; '29MHN'; '30FTN'; '32MTP'; '33MHP'; '34MQP'; '35MMQ'; '36MAQ'; '37MDS';'38MDS'; '39MTS'; '40MHS'; '41MVS'; '42FQT';'43MNT'; '44MTT'; '45MDV'];
+
+% read data traning
+for i = 1 : length(vowels_name)
+    dataTraningVowels(:, :, i) = dlmread(strcat(char(vowels_name(i, :)),'.txt'));
+end
 
 frame_duration = 0.03; %take frame duration 30msec
 
@@ -20,16 +25,16 @@ for i = 1 : length(vowels_name)
         [mfccOneVowel{i, j}] = [];
         [fftOneVowel{i, j}] = [];
         for k = first_index_stable(i, j) : last_index_stable(i, j)
-            started = (frameShiftLength * (k - 1)) + 1;
+            started = (frameLength * (k - 1)/2) + 1;
             ended =  started + frameLength - 1 ;
             SignalCurrent = [Sig{i, j}];
-            mfccMatrix  = melcepst(SignalCurrent(started:ended, 1).', fs, 'M', MFCC_ORDER, floor(3 * log(fs)), frameLength, frameShiftLength);
+            mfccMatrix  = melcepst(SignalCurrent(started:ended, 1).', fs, 'E', MFCC_ORDER - 1, floor(3 * log(fs)), frameLength, frameShiftLength);
             [mfccOneVowel{i, j}] = [[mfccOneVowel{i, j}]; Matrix_Average(mfccMatrix)];
 
             %Tinh pho bien do
-            fftMatrix = abs(fft(SignalCurrent(started:ended, 1), N_FFT));
+            fftMatrix = abs(fft(hamming(frameLength) .* SignalCurrent(started:ended, 1), N_FFT));
             fftMatrix = fftMatrix(1 : round(length(fftMatrix) / 2));
-            [fftOneVowel{i, j}] = [[fftOneVowel{i, j}]; Matrix_Average(reshape(fftMatrix,1, N_FFT / 2))];
+            [fftOneVowel{i, j}] = [[fftOneVowel{i, j}]; reshape(fftMatrix,1, N_FFT / 2)];
         end
         mfccOneVowel{i, j} = Matrix_Average([mfccOneVowel{i, j}]);
         fftOneVowel{i, j} = Matrix_Average([fftOneVowel{i, j}]);
@@ -42,13 +47,13 @@ for i = 1 : length(vowels_name)
 
     %xuat dac trung 5 nguyen am theo fft
     subplot(5, 1, i);
-    plot(FFT_avg(:, :, i));
+    plot(abs(FFT_avg(:, :, i)));
     legend('Spectral Envelope');
     ylabel('Amplitude');
     title(strcat('Vowel', {' '}, char(vowels_name(i, :))));
     datacursormode on;
 
-    [MFCC_Traning_5(:, :, i), ~, ~] =  v_kmeans(MFCC, 5); % k = 5 clusters
+%     [MFCC_Traning_5(:, :, i), ~, ~] =  v_kmeans(MFCC, 5); % k = 5 clusters
 end
 
 %xuat dac trung 5 nguyen am theo MFCC
@@ -79,8 +84,7 @@ countCorrectMFCC = 0;
 for i = 1 : length(folders_name) % 1 -> 21 speaker
     for j = 1 : length(vowels_name) % 1 -> 5 vowels
         %tinh euclid cho mfcc
-        %[minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
-        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(MFCC_avg, [mfccOneVowel{j, i}]);
+        [minDist, minPosMFCC] = Euclidean_Distance_Vowel(dataTraningVowels, [mfccOneVowel{j, i}]);
         
         %tinh euclid cho fft - kim
         dist2_a = euclid(FFT_avg(:,:,1), [fftOneVowel{j, i}]);
@@ -109,16 +113,6 @@ for i = 1 : length(folders_name) % 1 -> 21 speaker
        
         fprintf(fileID,'\n');
         fclose(fileID);
-        
-%         fprintf(fileID,'%s,',compare2);
-%         if (j == minPosMFCC)
-%             fprintf(fileID,'%s','Correct');
-%             countCorrectMFCC = countCorrectMFCC + 1;
-%         else    
-%             fprintf(fileID,'%s','Incorrect');
-%         end
-%        
-%         fprintf(fileID,'\n');
         
         %[minDist, minPos] = Euclidean_Distance_Vowel(MFCC_avg, Matrix_Average([mfccOneVowel{j, i}]));
         

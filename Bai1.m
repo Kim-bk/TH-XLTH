@@ -1,5 +1,6 @@
-function [STE_Line, first_index_stable, last_index_stable, Sig, Fs] = Bai1(fileName)
+function [STE_Line, first_index_stable, last_index_stable, SignalSample, Fs] = Bai1(fileName)
     [Sig, Fs] = audioread(fileName);
+    SignalSample = Sig;
     Sig = Sig./abs(max(Sig));
     samples = length(Sig);
     frameDuration = 0.03;
